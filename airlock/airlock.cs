@@ -1,3 +1,12 @@
+// configure arbitrarily many airlocks with arbitrarily many doors per airlock
+// for any airlock: opening a door will lock (disable) the other doors until all doors are closed again
+// combine with sensors/timers/buttons for nice airlock system
+
+// usage:
+// 1. group all doors per airlock (one group per airlock)
+// 2. name the groups to contain AIRLOCK_GROUP_IDENTIFIER ("<airlock>" by default, change below)
+// 3. recompile to detect the groups (necessary after every change!)
+
 private const string AIRLOCK_GROUP_IDENTIFIER = "<airlock>";
 
 private List<List<IMyDoor>> airlocks = new List<List<IMyDoor>>();
