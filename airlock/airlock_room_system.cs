@@ -106,17 +106,41 @@ public class Station {
 	public void Update() {
 		foreach (var doorRoom in _doorRoomDictionary) {
 
-			bool shouldLock = (doorRoom.Value.Count == 0);
+			bool shouldLock = true;
+			if (doorRoom.Value.Count == 2) {
+				VentStatus roomAVentStatus = _roomVentDictionary[room][0].Status;
+				VentStatus roomBVentStatus = _roomVentDictionary[room][1].Status;
+				bool roomACanPressurize = _roomVentDictionary[room][0].canPressurize();
+				bool roomBCanPressurize = _roomVentDictionary[room][1].canPressurize();
+				if (statusRoomA == VentStatus.Pressurized || statusRoomA == VentStatus.Pressurizing &&
+			}
+			(doorRoom.Value.Count < 2);
+			bool firstDoor = true;
+			VentStatus firstRoomVentStatus = VentStatus.Pressurized;
 			foreach (var room in doorRoom.Value) {
+				if (currentVentStatus == VentStatus.Pressurizing) {
+					currentVentStatus = VentStatus.Pressurized;
+				}
+				if (currentVentStatus == VentStatus.Depressurizing) {
+					currentVentStatus = VentStatus.Depressurized;
+				}
+
+				if (firstDoor) {
+					firstDoor = false;
+					firstRoomVentStatus = currentVentStatus;
+				} else if (firstRoomVentStatus != currentVentStatus) {
+					shouldLock = true;
+					break;
+				}
 
 				// todo:
 				// check more than one vent?
 				// check multiple ticks to account for buggy vents?
 				// check specific pressure percentages?
-				if (_roomVentDictionary[room][0].Status != VentStatus.Pressurized) {
-					shouldLock = true;
-					break;
-				}
+				//if (currentVentStatus != VentStatus.Pressurized) {
+				//	shouldLock = true;
+				//	break;
+				//}
 			}
 			if (shouldLock) {
 				doorRoom.Key.Enabled = (doorRoom.Key.Status != DoorStatus.Closed);
